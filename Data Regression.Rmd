@@ -1,0 +1,49 @@
+---
+title: "Data Regression"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+regressionSet<-read.csv("C:\\Users\\uvsre\\Desktop\\Data Science 1601\\Final Project\\cleanVGSet.csv")
+```
+
+# Part A
+
+```{r}
+criticScore_GlobalSales_model<-lm(Global_Sales~Critic_Score,regressionSet)
+summary(criticScore_GlobalSales_model)
+
+criticScore_TotalShipped_model<-lm(Total_Shipped~Critic_Score,regressionSet)
+summary(criticScore_TotalShipped_model)
+
+userScore_GlobalSales_model<-lm(Global_Sales~User_Score,regressionSet)
+summary(userScore_GlobalSales_model)
+
+userScore_TotalShipped_model<-lm(Total_Shipped~User_Score,regressionSet)
+summary(userScore_TotalShipped_model)
+```
+
+# Part B
+
+```{r}
+library(ISLR)
+logisticSet<-regressionSet%>%
+  select(Global_Sales, User_Score, Critic_Score)
+
+cor(logisticSet, use = "complete.obs")
+
+logit<-lm(Global_Sales~User_Score+Critic_Score, logisticSet)
+
+library(MASS)
+
+new.logit<-stepAIC(logit,direction = "forward",trace = FALSE)
+
+summary(new.logit)
+```
+
+```{r}
+testVector<-data.frame(Critic_Score=c(10), User_Score=c(10))
+predict(new.logit,testVector,type = "response")
+```

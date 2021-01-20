@@ -1,0 +1,104 @@
+---
+title: "Yuvraj Sreepathi(ys3mnq) 3.2 Data Wrangling"
+output: html_document
+---
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+dataSet <- read.csv("C:\\Users\\uvsre\\Desktop\\Data Science 1601\\Final Project\\vgsales-12-4-2019.csv")
+```
+
+# Part A
+```{r}
+summary(dataSet$Critic_Score)
+```
+```{r}
+summary(dataSet$User_Score)
+```
+```{r}
+summary(dataSet$Total_Shipped)
+```
+```{r}
+summary(dataSet$Global_Sales)
+```
+```{r}
+table(dataSet$Genre, dataSet$ESRB_Rating)
+```
+```{r}
+table(dataSet$Genre, dataSet$Platform)
+```
+```{r}
+table(dataSet$Genre, dataSet$Year)
+```
+```{r}
+table(dataSet$ESRB_Rating, dataSet$Platform)
+```
+```{r}
+table(dataSet$ESRB_Rating, dataSet$Year)
+```
+```{r}
+table(dataSet$Platform, dataSet$Year)
+```
+
+# Part B
+```{r}
+dataSet%>%
+filter(!is.na(dataSet$Global_Sales))%>%
+group_by(Platform)%>%
+summarize(averageGlobalSales=mean(Global_Sales, na.rm = T))
+
+```
+```{r}
+dataSet%>%
+filter(!is.na(dataSet$Global_Sales))%>%
+group_by(ESRB_Rating)%>%
+summarize(averageGlobalSales=mean(Global_Sales, na.rm = T))
+```
+```{r}
+dataSet%>%
+filter(!is.na(dataSet$Global_Sales))%>%
+group_by(Year)%>%
+summarize(averageGlobalSales=mean(Global_Sales, na.rm = T))
+```
+```{r}
+dataSet%>%
+filter(!is.na(dataSet$Critic_Score))%>%
+group_by(Platform)%>%
+summarize(averageCriticScore = mean(Critic_Score, na.rm = T))
+```
+
+
+# Part C
+```{r}
+updatedSet<-select(dataSet, -c(basename, Publisher, Developer, 
+                   Vgchartzscore,VGChartz_Score, NA_Sales, PAL_Sales, 
+                   JP_Sales, Other_Sales, Last_Update,
+                   url,img_url))
+```
+```{r}
+updatedSet<-updatedSet%>%
+  mutate(status=gsub("1","Available",status))%>%
+  mutate(status=gsub("0","Unavailable", status))
+```
+```{r}
+updatedSet<-updatedSet%>%
+  mutate(Updated_ESRB_Rating=gsub(" ",NA,ESRB_Rating))%>%
+  select(-ESRB_Rating)
+```
+```{r}
+updatedSet<-updatedSet%>%
+  rename(ESRB_Rating = Updated_ESRB_Rating)%>%
+  rename(Total_Sales = Global_Sales)%>%
+  rename(Availability = status)
+  
+```
+```{r}
+updatedSet<-updatedSet[!complete.cases(updatedSet),]
+```
+
+
+
+
